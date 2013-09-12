@@ -33,8 +33,8 @@ program
 
 // repack
 program
-  .command('repack <apk> <zip> [dest] [remain=false]')
-  .description('pack zip into apk, output to dest')
+  .command('repack <apk> <zip> [dest] [tmp]')
+  .description('pack zip into apk, output to dest, tmp as unpack path.')
   .action(ngmshell.repack);
 
 // sign

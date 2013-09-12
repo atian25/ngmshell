@@ -73,16 +73,16 @@ exports.unzip = function(archive, dest, remove, options){
 /**
  * 把apk解包成目录
  * @param  {String} apk  apk路径
- * @param  {String} dest 解压的目录(会自动加上apk名称)
+ * @param  {String} parent 解压的父目录
  */
-exports.unpack = function(apk, dest, options){
+exports.unpack = function(apk, parent, options){
   apk = getAbsolutePath(apk);
   if(!test('-e', apk) || path.extname(apk)!='.apk'){
     logger.error('apk not exist or not .apk file: %s', apk);
     return false;
   }else{
     var base = path.basename(apk, '.apk');
-    dest = getAbsolutePath(path.join(dest, base));
+    var dest = getAbsolutePath(path.join(parent, base));
     mkdir('-p', dest);
     rm('-rf', dest);
     var cmd = formatStr('java -jar apktool.jar d -r -s -f {0} {1}', apk, dest);
@@ -120,12 +120,13 @@ exports.pack = function(apk, src, options){
  * @param  {String} apk    原始apk路径
  * @param  {String} zip    html.zip路径
  * @param  {String} dest   目标apk路径,若为空则覆盖原有
- * @param  {Boolean} remain 是否保留解包目录, 默认为false
+ * @param  {String} tmp    解包父目录,如果为空则默认为缓存目录
  */
-exports.repack = function(apk, zip, dest, remain){
+exports.repack = function(apk, zip, dest, tmp){
   apk = getAbsolutePath(apk);
   zip = getAbsolutePath(zip);
   dest = getAbsolutePath(dest||apk);
+  tmp = getAbsolutePath(tmp||tempdir());
   if(!test('-e', apk) || path.extname(apk)!='.apk'){
     logger.error('apk not exist or not .apk file: %s', apk);
     return false;
@@ -134,17 +135,13 @@ exports.repack = function(apk, zip, dest, remain){
     return false;
   }else{
     var name = path.basename(apk, '.apk');
-    var dir = process.cwd();
     //解包
-    exports.unpack(apk, dir);
+    exports.unpack(apk, tmp);
     //复制zip到assets目录
-    var unpackPath = path.join(dir, name);
+    var unpackPath = getAbsolutePath(path.join(tmp, name));
     cp('-f', zip, path.join(unpackPath, 'assets', 'html.zip'));
     //打包
     exports.pack(dest, unpackPath);
-    if(!remain){
-      rm('-rf', unpackPath);
-    }
     //签名
     exports.sign(dest, path.join(getToolPath(), 'test.keystore'), '123456');
     return true;
