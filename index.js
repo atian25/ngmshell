@@ -287,14 +287,15 @@ exports.checkPackage = function(archive){
     return false;
   }else{
     var json = require(packagePath);
-    var prop = ['name', 'version', 'platform', 'appVersion', 'tplVersionCode', 'appName', 'appDescription', 'appFlag'];
-    var str = JSON.stringify(json, prop, '  ');
+    var checkProp = ['platform', 'appVersion', 'tplVersionCode', 'appName', 'appDescription', 'appFlag'];
+    var showProp = [].concat(['name', 'version'], checkProp, 'buildDate');
+    var str = JSON.stringify(json, showProp, '  ');
     logger.info('package.json = %s', str);
 
     //检查是否丢失属性
-    var result = !prop.some(function(p){
+    var result = !checkProp.some(function(p){
       if(!json.hasOwnProperty(p)){
-        logger.warn('miss prop: %s', p);
+        logger.warning('miss prop: %s', p);
         return true;
       }
     });
