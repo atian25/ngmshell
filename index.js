@@ -258,20 +258,20 @@ exports.checkPackage = function(archive){
 
   var name = path.basename(archive).replace(/\.(zip|apk)$/, '');
   var extname = path.extname(archive);
-  var tmp = path.join(tempdir(), name);
+  var tmp = tempdir();
   var htmlPath;
   var unzipHtmlPath;
 
   //是apk还是zip?
   if(extname == '.apk'){
-    var unpackPath = tmp;
     //解包
-    exports.unpack(archive, unpackPath, {silent:true});
+    exports.unpack(archive, tmp, {silent:true});
+    var unpackPath = path.join(tmp, name);
     htmlPath = path.join(unpackPath, 'assets', 'html.zip');
     unzipHtmlPath = path.join(unpackPath, 'assets', 'html');
   }else if(extname == '.zip'){
     htmlPath = archive;
-    unzipHtmlPath = tmp;
+    unzipHtmlPath = path.join(tmp, name);;
   }else{
     logger.error('unkown filetype: %s', extname);
     return false;
