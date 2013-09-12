@@ -1,0 +1,23 @@
+{
+  "name": "ngmshell",
+  "description": "provide common shell for ucgc",
+  "version": "0.0.1",
+  "preferGlobal": true,
+  "author": {
+    "name": "TZ",
+    "email": "atian25@qq.com"
+  },
+  "bin": {
+    "ngmshell": "./bin/ngmshell.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:atian25/ngmshell.git"
+  },
+  "dependencies": {
+    "shelljs": "latest",
+    "commander": "latest",
+    "debug": "latest",
+    "log": "~1.4.0"
+  }
+}
