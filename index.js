@@ -116,16 +116,58 @@ exports.pack = function(apk, src, options){
 // exports.pack('D:\\Workspace\\Code\\9game\\ninegameclient\\apad-h5\\dist\\cn.ninegame.gamemanager.apk','D:\\Workspace\\Code\\9game\\ninegameclient\\apad-h5\\dist\\cn.ninegame.gamemanager');
 
 /**
+ * 把zip打包到apk
+ * @param  {String} apk    原始apk路径
+ * @param  {String} zip    html.zip路径
+ * @param  {String} dest   目标apk路径,若为空则覆盖原有
+ * @param  {Boolean} remain 是否保留解包目录, 默认为false
+ */
+exports.repack = function(apk, zip, dest, remain){
+  apk = getAbsolutePath(apk);
+  zip = getAbsolutePath(zip);
+  dest = getAbsolutePath(dest||apk);
+  if(!test('-e', apk) || path.extname(apk)!='.apk'){
+    logger.error('apk not exist or not .apk file: %s', apk);
+    return false;
+  }else if(!test('-e', zip) || path.extname(zip)!='.zip'){
+    logger.error('zip not exist or not .zip file: %s', zip);
+    return false;
+  }else{
+    var name = path.basename(apk, '.apk');
+    var dir = process.cwd();
+    //解包
+    exports.unpack(apk, dir);
+    //复制zip到assets目录
+    var unpackPath = path.join(dir, name);
+    cp('-f', zip, path.join(unpackPath, 'assets', 'html.zip'));
+    //打包
+    exports.pack(dest, unpackPath);
+    if(!remain){
+      rm('-rf', unpackPath);
+    }
+    //签名
+    exports.sign(dest, path.join(getToolPath(), 'test.keystore'), '123456');
+    return true;
+  }
+}
+/**
  * 对apk签名
  * @param  {String} apk  要签名的apk路径
  * @param  {String} keystore  keystore文件的路径
  * @param  {String} pass keystore的密码
  */
 exports.sign = function(apk, keystore, pass, options){
+  if(!keystore){
+    keystore = path.join(getToolPath(), 'test.keystore');
+    pass = '123456';
+  }
   apk = getAbsolutePath(apk);
   keystore = getAbsolutePath(keystore);
   if(!test('-e', apk)){
     logger.error('apk not exist: %s', apk);
+    return false;
+  }if(!test('-e', keystore)){
+    logger.error('keystore not exist: %s', keystore);
     return false;
   }else{
     var cmd = formatStr('jarsigner -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore {1} -storepass {2} {0}  test', apk, keystore, pass);

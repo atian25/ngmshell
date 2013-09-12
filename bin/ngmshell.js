@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 var ngmshell = require('../index.js');
 var program = require('commander');
+var version = require('../package.json').version;
 
 program
-  .version('0.0.1')
+  .version(version)
   .option('-d, --debug', 'log debug level')
-  .option('-c, --config <path>', 'set config path [./deploy.conf]')
-  .option('-T, --no-tests', 'ignore test hook')
 
 // zip
 program
@@ -32,9 +31,15 @@ program
   .description('pack src to apk')
   .action(ngmshell.pack);
 
+// repack
+program
+  .command('repack <apk> <zip> [dest] [remain=false]')
+  .description('pack zip into apk, output to dest')
+  .action(ngmshell.repack);
+
 // sign
 program
-  .command('sign <apk> <keystore> <pass>')
+  .command('sign <apk> [keystore] [pass]')
   .description('sign apk with keystore/pass')
   .action(ngmshell.sign);
 
@@ -55,6 +60,15 @@ program
   .command('uninstall <apkName>')
   .description('uninstall apk by apkName')
   .action(ngmshell.uninstall);
+
+// reinstall
+program
+  .command('reinstall <apk> [apkName]')
+  .description('install apk (uninstall first)')
+  .action(function(apk, apkName){
+    ngmshell.uninstall(apkName || apk);
+    ngmshell.install(apk);
+  });
 
 // startup
 program
