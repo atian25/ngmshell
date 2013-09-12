@@ -82,6 +82,16 @@ program
   .description('check package.json from apk/zip')
   .action(ngmshell.checkPackage);
 
+// doc
+program
+  .command('doc [isRemote]')
+  .description('show doc')
+  .action(function(isRemote){
+    var open = require('open');
+    var url = isRemote ? require('../package.json').homepage : 'http://10.1.73.35:8889/pages/viewpage.action?pageId=917546';
+    open(url);
+  });
+
 //解析参数
 program.parse(process.argv);
 

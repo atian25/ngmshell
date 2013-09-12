@@ -13,6 +13,7 @@
  ## 支持的指令
 
  - help
+ - doc
  - repack : 把html压缩包打包到apk
  - reinstall : 重装apk
  - check : 检查自述文件
