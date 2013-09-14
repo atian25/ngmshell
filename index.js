@@ -35,11 +35,13 @@ exports.zip = function(archive, src, options){
     logger.error('src dir not exist: %s',  src);
     return false;
   }else{
+    var preDir = process.cwd();
     cd(src);
     rm('-f', archive);
     var cmd = formatStr('/7za a -tzip {0} -r ./*', archive);
     // logger.info('>start zip: ' + cmd);
     exec(getToolPath() + cmd, options);
+    cd(preDir);
     return true;
   }
 }
@@ -81,6 +83,7 @@ exports.unpack = function(apk, parent, options){
     logger.error('apk not exist or not .apk file: %s', apk);
     return false;
   }else{
+    var preDir = process.cwd();
     var base = path.basename(apk, '.apk');
     var dest = getAbsolutePath(path.join(parent, base));
     mkdir('-p', dest);
@@ -89,6 +92,7 @@ exports.unpack = function(apk, parent, options){
     logger.info('>start unpack: ' + cmd);
     cd(getToolPath());
     exec(cmd, options);
+    cd(preDir);
     return true;
   }
 }
@@ -106,10 +110,12 @@ exports.pack = function(apk, src, options){
     logger.error('src not exist or directory: %s', src);
     return false;
   }else{
+    var preDir = process.cwd();
     var cmd = formatStr('java -jar apktool.jar b -f {0} {1}', src, apk);
     logger.info('>start pack: ' + cmd);
     cd(getToolPath());
     exec(cmd, options);
+    cd(preDir);
     return true;
   }
 }

@@ -31,4 +31,5 @@
 
 - updateVersion
 - add mocha test
+- offer local module & gruntfile
 
