@@ -251,10 +251,10 @@ exports.startup = function(activity, options){
 //TODO: 检查version文件
 
 /**
- * 检查apk/zip包中的页面模板包的自述文件
- * @param  {String} archive apk/zip文件的路径
+ * 检查apk/zip/dir中的页面模板包的自述文件
+ * @param  {String} archive apk/zip文件的路径或html目录路径
  */
-exports.checkPackage = function(archive){
+exports.check = function(archive){
   archive = getAbsolutePath(archive);
   //检查目标是否存在
   if(!test('-e', archive)){
@@ -262,29 +262,33 @@ exports.checkPackage = function(archive){
     return false;
   }
 
-  var name = path.basename(archive).replace(/\.(zip|apk)$/, '');
-  var extname = path.extname(archive);
   var tmp = tempdir();
   var htmlPath;
   var unzipHtmlPath;
+  //如果不是目录,则解压
+  if(!test('-d', archive)){
+    var name = path.basename(archive).replace(/\.(zip|apk)$/, '');
+    var extname = path.extname(archive);
 
-  //是apk还是zip?
-  if(extname == '.apk'){
-    //解包
-    exports.unpack(archive, tmp, {silent:true});
-    var unpackPath = path.join(tmp, name);
-    htmlPath = path.join(unpackPath, 'assets', 'html.zip');
-    unzipHtmlPath = path.join(unpackPath, 'assets', 'html');
-  }else if(extname == '.zip'){
-    htmlPath = archive;
-    unzipHtmlPath = path.join(tmp, name);;
+    //是apk还是zip?
+    if(extname == '.apk'){
+      //解包
+      exports.unpack(archive, tmp, {silent:true});
+      var unpackPath = path.join(tmp, name);
+      htmlPath = path.join(unpackPath, 'assets', 'html.zip');
+      unzipHtmlPath = path.join(unpackPath, 'assets', 'html');
+    }else if(extname == '.zip'){
+      htmlPath = archive;
+      unzipHtmlPath = path.join(tmp, name);;
+    }else{
+      logger.error('unkown filetype: %s', extname);
+      return false;
+    }
+    //解压
+    exports.unzip(htmlPath, unzipHtmlPath, true, {silent:true});
   }else{
-    logger.error('unkown filetype: %s', extname);
-    return false;
+    unzipHtmlPath = archive;
   }
-
-  //解压
-  exports.unzip(htmlPath, unzipHtmlPath, true, {silent:true});
 
   //读取package.json
   var packagePath = path.join(unzipHtmlPath, 'package.json');

@@ -76,11 +76,11 @@ program
   .description('startup apk by activity/apkName')
   .action(ngmshell.startup);
 
-// checkPackage
+// check
 program
-  .command('check <apk/zip>')
-  .description('check package.json from apk/zip')
-  .action(ngmshell.checkPackage);
+  .command('check <apk/zip/dir>')
+  .description('check package.json from apk/zip/dir')
+  .action(ngmshell.check);
 
 // doc
 program
