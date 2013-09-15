@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 var ngmshell = require('../index.js');
 var program = require('commander');
-var version = require('../package.json').version;
+var pkg = require('../package.json');
+require('shelljs/global');
 
 program
-  .version(version)
+  .version(pkg.version)
   .option('-d, --debug', 'log debug level')
   .option('-p, --power', 'power zip/unzip')
 
@@ -103,7 +104,7 @@ program
   .description('show doc')
   .action(function(isRemote){
     var open = require('open');
-    var url = isRemote ? require('../package.json').homepage : 'http://10.1.73.35:8889/pages/viewpage.action?pageId=917546';
+    var url = isRemote ? pkg.homepage : 'http://10.1.73.35:8889/pages/viewpage.action?pageId=917546';
     open(url);
   });
 
