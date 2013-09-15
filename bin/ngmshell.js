@@ -13,6 +13,20 @@ program
   .description('zip src to archive')
   .action(ngmshell.zip);
 
+// unarchive
+program
+  .command('unarchive <archive> <dest>')
+  .description('unarchive archive to dest')
+  .action(ngmshell.unarchive);
+
+// archive
+program
+  .command('archive <archive> <src> [compress=true] [incCurDir=false]')
+  .description('archive src to archive')
+  .action(function(archive, src, compress, incCurDir){
+    ngmshell.archive(archive, src, compress, incCurDir);
+  });
+
 // unzip
 program
   .command('unzip <archive> <dest> [remove=false]')

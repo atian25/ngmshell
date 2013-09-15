@@ -23,6 +23,50 @@ exports.setLogLevel = function(levelStr){
 }
 
 /**
+ * 加强版压缩: https://github.com/neevek/MiniArchiver
+ * @param  {String} archive   要输出的压缩包路径
+ * @param  {String} src       要压缩的目录路径
+ * @param  {Boolean} compress  是否压缩,默认true
+ * @param  {Boolean} incCurDir 是否包含当前目录,默认false
+ */
+exports.archive = function(archive, src, compress, incCurDir, options){
+  archive = getAbsolutePath(archive);
+  src = getAbsolutePath(src);
+  logger.info('archive dir: %s to %s', src, archive);
+  if(!test('-e', src)){
+    logger.error('src dir not exist: %s',  src);
+    return false;
+  }else{
+    compress = compress || true;
+    incCurDir = incCurDir || false;
+    rm('-f', archive);
+    var cmd = formatStr('java -jar {0}/MiniArchiver.jar archive {1} {2} {3} {4}', getToolPath(), src, archive, compress, incCurDir);
+    exec(cmd, options);
+    return true;
+  }
+}
+
+/**
+ * 加强版解压: https://github.com/neevek/MiniArchiver
+ * @param  {String} archive   要解压的压缩包路径
+ * @param  {String} src       要输出的目录路径
+ */
+exports.unarchive = function(archive, dest, options){
+  archive = getAbsolutePath(archive);
+  dest = getAbsolutePath(dest);
+  logger.info('unarchive zip: %s to %s', archive, dest);
+  if(!test('-e', archive)){
+    logger.error('archive not exist: %s',  archive);
+    return false;
+  }else{
+    rm('-rf', dest);
+    var cmd = formatStr('java -jar {0}/MiniArchiver.jar unarchive {1} {2}', getToolPath(), archive, dest);
+    exec(cmd, options);
+    return true;
+  }
+}
+
+/**
  * 压缩html目录
  * @param  {String} archive 压缩文件名称
  * @param  {String} src     要压缩的目录
