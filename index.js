@@ -26,10 +26,10 @@ exports.setLogLevel = function(levelStr){
  * 加强版压缩: https://github.com/neevek/MiniArchiver
  * @param  {String} archive   要输出的压缩包路径
  * @param  {String} src       要压缩的目录路径
- * @param  {Boolean} compress  是否压缩,默认true
- * @param  {Boolean} incCurDir 是否包含当前目录,默认false
+ * @param  {Boolean} compress 是否压缩,默认true
+ * @param  {Boolean} current  是否包含当前目录,默认false
  */
-exports.archive = function(archive, src, compress, incCurDir, options){
+exports.archive = function(archive, src, compress, current, options){
   archive = getAbsolutePath(archive);
   src = getAbsolutePath(src);
   logger.info('archive dir: %s to %s', src, archive);
@@ -38,9 +38,9 @@ exports.archive = function(archive, src, compress, incCurDir, options){
     return false;
   }else{
     compress = compress || true;
-    incCurDir = incCurDir || false;
+    current = current || false;
     rm('-f', archive);
-    var cmd = formatStr('java -jar {0}/MiniArchiver.jar archive {1} {2} {3} {4}', getToolPath(), src, archive, compress, incCurDir);
+    var cmd = formatStr('java -jar {0}/MiniArchiver.jar archive {1} {2} {3} {4}', getToolPath(), src, archive, compress, current);
     exec(cmd, options);
     return true;
   }
@@ -51,7 +51,7 @@ exports.archive = function(archive, src, compress, incCurDir, options){
  * @param  {String} archive   要解压的压缩包路径
  * @param  {String} src       要输出的目录路径
  */
-exports.unarchive = function(archive, dest, options){
+exports.unarchive = function(archive, dest, remove, options){
   archive = getAbsolutePath(archive);
   dest = getAbsolutePath(dest);
   logger.info('unarchive zip: %s to %s', archive, dest);
@@ -95,9 +95,8 @@ exports.zip = function(archive, src, options){
  * 解压zip
  * @param  {String} archive zip文件路径
  * @param  {String} dest    解压目录
- * @param  {Boolean} remove  是否先删除目标目录,默认为false
  */
-exports.unzip = function(archive, dest, remove, options){
+exports.unzip = function(archive, dest, options){
   archive = getAbsolutePath(archive);
   dest = getAbsolutePath(dest);
   logger.info('unzip zip: %s to %s', archive, dest);
@@ -105,9 +104,7 @@ exports.unzip = function(archive, dest, remove, options){
     logger.error('archive not exist: %s',  archive);
     return false;
   }else{
-    if(remove){
-      rm('-rf', dest);
-    }
+    rm('-rf', dest);
     var cmd = formatStr('/7za x {0} -o{1}', archive, dest);
     //logger.debug('>start unzip: ' + cmd);
     exec(getToolPath() + cmd, options);
@@ -297,8 +294,9 @@ exports.startup = function(activity, options){
 /**
  * 检查apk/zip/dir中的页面模板包的自述文件
  * @param  {String} archive apk/zip文件的路径或html目录路径
+ * @param  {Boolean} power 是否加强版压缩
  */
-exports.check = function(archive){
+exports.check = function(archive, power){
   archive = getAbsolutePath(archive);
   //检查目标是否存在
   if(!test('-e', archive)){
@@ -329,7 +327,11 @@ exports.check = function(archive){
       return false;
     }
     //解压
-    exports.unzip(htmlPath, unzipHtmlPath, true, {silent:true});
+    if(power){
+      exports.unarchive(htmlPath, unzipHtmlPath);
+    }else{
+      exports.unzip(htmlPath, unzipHtmlPath, {silent:true});
+    }
   }else{
     unzipHtmlPath = archive;
   }

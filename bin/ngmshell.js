@@ -6,32 +6,31 @@ var version = require('../package.json').version;
 program
   .version(version)
   .option('-d, --debug', 'log debug level')
+  .option('-p, --power', 'power zip/unzip')
 
 // zip
 program
-  .command('zip <archive> <src>')
+  .command('zip <archive> <src> [-p]')
   .description('zip src to archive')
-  .action(ngmshell.zip);
-
-// unarchive
-program
-  .command('unarchive <archive> <dest>')
-  .description('unarchive archive to dest')
-  .action(ngmshell.unarchive);
-
-// archive
-program
-  .command('archive <archive> <src> [compress=true] [incCurDir=false]')
-  .description('archive src to archive')
-  .action(function(archive, src, compress, incCurDir){
-    ngmshell.archive(archive, src, compress, incCurDir);
+  .action(function(archive, src, compress, current){
+    if(program.power){
+      ngmshell.archive(archive, src, compress, current);
+    }else{
+      ngmshell.zip(archive, src);
+    }
   });
 
 // unzip
 program
-  .command('unzip <archive> <dest> [remove=false]')
+  .command('unzip <archive> <dest> [-p]')
   .description('unzip archive to dest')
-  .action(ngmshell.unzip);
+  .action(function(archive, src){
+    if(program.power){
+      ngmshell.unarchive(archive, src);
+    }else{
+      ngmshell.unzip(archive, src);
+    }
+  });
 
 // unpack
 program
@@ -92,13 +91,15 @@ program
 
 // check
 program
-  .command('check <apk/zip/dir>')
+  .command('check <apk/zip/dir> [-p]')
   .description('check package.json from apk/zip/dir')
-  .action(ngmshell.check);
+  .action(function(archive){
+    ngmshell.check(archive, program.power);
+  });
 
 // doc
 program
-  .command('doc [isRemote]')
+  .command('doc [remote]')
   .description('show doc')
   .action(function(isRemote){
     var open = require('open');
