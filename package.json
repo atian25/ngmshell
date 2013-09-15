@@ -18,7 +18,6 @@
   "dependencies": {
     "shelljs": "latest",
     "commander": "latest",
-    "log": "latest",
-    "open": "latest"
+    "log": "latest"
   }
 }

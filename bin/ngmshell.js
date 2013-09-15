@@ -111,8 +111,6 @@ program
   .action(function(isRemote){
     var open = require('open');
     var url = isRemote ? pkg.homepage : 'http://10.1.73.35:8889/pages/viewpage.action?pageId=917546';
-    //var appName = 'start chrome.exe --user-data-dir=C:/CHROME_DEV  --disable-web-security --allow-file-access-from-files'
-    //open(url, appName);
     ngmshell.open(url)
   });
 
