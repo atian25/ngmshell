@@ -98,6 +98,12 @@ program
     ngmshell.check(archive, program.power);
   });
 
+// open crossdomain chrome
+program
+  .command('chrome [url] [crossdomain=false]')
+  .description('open url at chrome (suppport crossdomain)')
+  .action(ngmshell.open);
+
 // doc
 program
   .command('doc [remote]')
@@ -105,7 +111,9 @@ program
   .action(function(isRemote){
     var open = require('open');
     var url = isRemote ? pkg.homepage : 'http://10.1.73.35:8889/pages/viewpage.action?pageId=917546';
-    open(url);
+    //var appName = 'start chrome.exe --user-data-dir=C:/CHROME_DEV  --disable-web-security --allow-file-access-from-files'
+    //open(url, appName);
+    ngmshell.open(url)
   });
 
 //解析参数

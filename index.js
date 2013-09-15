@@ -23,6 +23,18 @@ exports.setLogLevel = function(levelStr){
 }
 
 /**
+ * 启动chrome
+ * @param  {String} url         要打开的URL
+ * @param  {Boolean} crossdomain 是否在跨域模式
+ */
+exports.open = function(url, crossdomain){
+  url = url && url.replace(/"/g, '\\\"') || 'about:blank';
+  param = !crossdomain ? '' : ' --user-data-dir=C:/CHROME_DEV  --disable-web-security --allow-file-access-from-files ';
+  var cmd = formatStr('start chrome {1} {0} ', url, param);
+  exec(cmd);
+}
+
+/**
  * 加强版压缩: https://github.com/neevek/MiniArchiver
  * @param  {String} archive   要输出的压缩包路径
  * @param  {String} src       要压缩的目录路径
