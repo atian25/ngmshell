@@ -1,7 +1,7 @@
 {
   "name": "ngmshell",
   "description": "provide common shell for ucgc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "preferGlobal": true,
   "author": {
     "name": "TZ",

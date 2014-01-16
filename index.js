@@ -247,14 +247,15 @@ exports.devices = function(options){
 /**
  * 安装apk
  * @param  {String} apk apk路径
+ * @param  {String} serial 手机设备的序列号,可选
  */
-exports.install = function(apk, options){
+exports.install = function(apk, serial, options){
   apk = getAbsolutePath(apk);
   if(!test('-e', apk)){
     logger.error('apk not exist: %s', apk);
     return false;
   }else{
-    var cmd = formatStr('adb install {0}', apk);
+    var cmd = formatStr('adb install {0} {1}', apk, (serial?'-s '+serial:''));
     logger.info('>' + cmd);
     exec(getToolPath() + '/' + cmd, options);
     return true;
@@ -265,14 +266,15 @@ exports.install = function(apk, options){
 /**
  * 卸载apk
  * @param  {String} apkName apk名称, 而不是apk路径
+ * @param  {String} serial 手机设备的序列号,可选
  */
-exports.uninstall = function(apkName, options){
+exports.uninstall = function(apkName, serial, options){
   //当给出的是apk路径时,抽取出apkName
   if(test('-e', apkName)){
     //logger.warning('should giving apkName not apkPath: %s', apkName);
     apkName = path.basename(apkName, '.apk');
   }
-  var cmd = formatStr('adb uninstall {0}', apkName);
+  var cmd = formatStr('adb uninstall {0} {1}', apkName, (serial?'-s '+serial:''));
   logger.debug('>' + cmd);
   exec(getToolPath() + '/' + cmd, options);
   return true;

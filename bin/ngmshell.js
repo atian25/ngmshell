@@ -65,13 +65,13 @@ program
 
 // install
 program
-  .command('install <apk>')
+  .command('install <apk> [serial]')
   .description('install apk by path')
   .action(ngmshell.install);
 
 // uninstall
 program
-  .command('uninstall <apkName>')
+  .command('uninstall <apkName> [serial]')
   .description('uninstall apk by apkName')
   .action(ngmshell.uninstall);
 
